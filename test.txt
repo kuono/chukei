@@ -1,0 +1,87 @@
+<h3>新着情報</h3>
+    <ul>
+<script type="text/javascript">
+// A function that takes an RSS feed URL as an argument and returns an array of objects with title and date properties
+function parseRSS(feedURL, callback) {
+  // Create a new XMLHttpRequest object
+  var xhr = new XMLHttpRequest();
+  // Open a GET request to the feed URL
+  xhr.open("GET", feedURL, true);
+  // Set the response type to document
+  xhr.responseType = "document";
+  // Define a callback function that runs when the request is completed
+  xhr.onload = function() {
+    // Check if the status is 200 (OK)
+    if (xhr.status === 200) {
+      // Get the XML document from the response
+      var xml = xhr.responseXML;
+      // Get all the <item> elements from the document
+      var items = xml.getElementsByTagName("item");
+      // Create an empty array to store the results
+      var results = [];
+      // Loop through each item element
+      for (var i = 0; i < items.length; i++) {
+        // Get the <title> and <pubDate> elements from the current item
+        var title = items[i].getElementsByTagName("title")[0];
+        var date = items[i].getElementsByTagName("pubDate")[0];
+        // Convert the date string to a Date object
+        var dateObj = new Date(date.textContent);
+        // Format the date object to yyyy/mm/dd using the getFullYear, getMonth and getDate methods
+        var year = dateObj.getFullYear(); // 2023
+        var month = dateObj.getMonth() + 1; // 12
+        var day = dateObj.getDate(); // 25
+        // Add leading zeros to month and day if they are less than 10
+        if (month < 10) {
+          month = "0" + month;
+        }
+        if (day < 10) {
+          day = "0" + day;
+        }
+        // Join the year, month and day with "/" as a separator
+        var formattedDate = [year, month, day].join("/"); // "2023/12/25"
+        // Create an object with title and date properties and push it to the results array
+        results.push({
+          title: title.textContent,
+          date: formattedDate
+        });
+      }
+      // Call the callback function with the results array as an argument
+      callback(results);
+    } else {
+      // If the status is not 200, throw an error
+      throw new Error("Request failed: " + xhr.status);
+    }
+  };
+  // Send the request
+  xhr.send();
+}
+
+// A function that takes an array of objects with title and date properties and displays them as a list of html elements
+function displayRSS(results) {
+  // Get the <div> element with id="rss" from the document
+  var rssDiv = document.getElementById("rss");
+  // Create a new <ul> element
+  var ul = document.createElement("ul");
+  // Loop through each result object
+  for (var i = 0; i < results.length; i++) {
+    // Create a new <li> element
+    var li = document.createElement("li");
+    // Create a new <a> element with the result title as the text and the result date as the title attribute
+    var a = document.createElement("a");
+    a.textContent = results[i].title;
+    a.title = results[i].date;
+    // Append the <a> element to the <li> element
+    li.appendChild(a);
+    // Append the <li> element to the <ul> element
+    ul.appendChild(li);
+    // Output the <li> element to the console
+    console.log(li);
+  }
+  // Append the <ul> element to the <div> element
+  rssDiv.appendChild(ul);
+}
+
+// Call the parseRSS function with an example RSS feed URL and pass the displayRSS function as a callback
+    console.log(parseRSS("https://www.miraino-hoiku.com/rss/blog").then(displayRSS));
+</script>
+</ul>
